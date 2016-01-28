@@ -23,8 +23,8 @@ public abstract class Entity {
     private int viewDistance; // Distance de vision
     private int viewField; // champ de vision
     private Color color = null; // Color of the entity, only for RvRUI.GameUI
-    private long bornTime; // in ticks
-    private long deathTime; // in ticks
+    private long bornTime = -1; // in ticks
+    private long deathTime = -1; // in ticks
     ArrayList<TargetEntity> touchingEntities;
     ArrayList<TargetEntity> viewEntities;
 
@@ -143,7 +143,10 @@ public abstract class Entity {
         return this.color;
     }
     public long getTimeAlive(){
-        return deathTime-bornTime;
+        if(deathTime!=-1)
+            return deathTime-bornTime;
+        else
+            return -bornTime;
     }
     public ArrayList<TargetEntity> getTouchingEntities(){
         return touchingEntities;

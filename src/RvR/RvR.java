@@ -15,7 +15,7 @@ public class RvR extends Thread implements EntityEvents {
 
     ArrayList<Entity> entitiesList;
     ArrayList<Entity> entitiesGarbage;
-    EntityEvents listener;
+    //EntityEvents listener;
     boolean running = false;
     long time;
     public int ringSize;
@@ -122,7 +122,6 @@ public class RvR extends Thread implements EntityEvents {
         if(running)
             return;
         running = true;
-        presentation();
         time = 0;
         if(map != null)
             map.setMap();
@@ -130,8 +129,13 @@ public class RvR extends Thread implements EntityEvents {
     }
     public void stopRvr(){
         running = false;
+        for(Entity e : entitiesList){
+            if(!e.isDead())
+                e.setDeathTime(time);
+        }
+        fireEnd();
     }
-    private void clearRun(){
+    public void clearRun(){
         while(entitiesList.size()>0){
             if(!entitiesList.get(0).isDead()) {
                 entitiesList.get(0).removeHealth(1000000);
@@ -142,7 +146,7 @@ public class RvR extends Thread implements EntityEvents {
             entitiesList.remove(0);
         }
         entitiesList.clear();
-        fireEnd();
+        //fireEnd();
     }
     public void presentation() {
         for(Entity e : entitiesList) {
@@ -359,122 +363,4 @@ public class RvR extends Thread implements EntityEvents {
         System.out.println(s);
     }
 
-
-    // ---------------------------------------
-    // Instanciation dynamique d'un robot
-    // ---------------------------------------
-    public void dynamicLoadRobot(String robotName) {
-        System.out.println("Start loading of " + robotName + "...");
-
-        // On compile
-        int resCompile = 0;
-        if((resCompile = dynCompile(robotName+".java")) == 0) {
-            // On instancie
-            Robot dr = dynLoad(robotName);
-            if (dr == null)
-                System.out.println("Erreur de chargement de la class");
-            else {
-                // On met dans le jeu
-                this.addEntity(dr);
-                System.out.println("Load of " + robotName + " completed !");
-            }
-        }else{
-            System.out.println("Error during dynamic compilation : " + resCompile);
-        }
-
-
-    }
-
-    public int dynCompile(String fileAdr){
-        fileAdr = "bots/"+fileAdr;
-        // Attention, ce ne sera pas le même classpath quand le programme sera en jar... et je ne sais pas ce que ça donnera
-        // Une solution pourrait être de choper le dir actuel, et d'extraire les .class nécessaires dedans, mais peut-être que
-        // javac pourrait se servir directement dans le .jar... à voir
-        String classPath = System.getProperty("user.dir")+"/out/production/rvr/";
-
-        return com.sun.tools.javac.Main.compile(new String[] {
-                "-classpath", classPath,
-                "-d", System.getProperty("user.dir")+"/bots_compiled/",
-                fileAdr });
-    }
-    public Robot dynLoad(String robotName){
-        // The dir contains the compiled classes.
-        File classesDir = new File(System.getProperty("user.dir")+"/bots_compiled/");
-
-        // The parent classloader
-        ClassLoader parentLoader = Robot.class.getClassLoader();
-
-        // Load class with our own classloader.
-        try {
-            URLClassLoader loader1 = new URLClassLoader(new URL[]{classesDir.toURL()}, parentLoader);
-            Class cls1 = loader1.loadClass("Robots."+robotName);
-            return (Robot) cls1.newInstance();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
 }
-
-
-
-
-
-
-/*
-        File file = new File(System.getProperty("user.dir") + "/bots/");
-        try {
-            // Convert File to a URL
-            URL url = file.toURL();          // file:/c:/myclasses/
-            URL[] urls = new URL[]{url};
-
-
-            // Create a new class loader with the directory
-            ClassLoader cl = new URLClassLoader(urls);
-
-
-            // Load in the class; MyClass.class should be located in the directory file:/c:/myclasses/com/mycompany
-            //Class cls = cl.loadClass("Robot");
-            //Class cls = cl.loadClass(nom);
-            Object r = cl.loadClass("RvR.RVR."+nom).newInstance();
-
-            // On l'ajoute au jeu
-            addEntity((Robot)r);
-                    //loadClass("Main", true).newInstance();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        */
-
-
-
-        /*
-        try {
-            //On crée un objet Class
-            Class cl = Class.forName(nom);
-
-            //Nouvelle instance de la classe Paire
-            Object o = cl.newInstance();
-
-            //On crée les paramètres du constructeur
-            //Class[] types = new Class[]{String.class, String.class};
-
-            //On récupère le constructeur avec les deux paramètres
-            //Constructor ct = cl.getConstructor(types);
-            Constructor ct = cl.getConstructor();
-
-            //On instancie l'objet avec le constructeur surchargé !
-            Object o2 = ct.newInstance(new String[]{"valeur 1 ", "valeur 2"} );
-
-            // On l'ajoute au jeu
-            addEntity((Robot)o2);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        */
-

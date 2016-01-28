@@ -19,6 +19,7 @@ public class GameUI extends JPanel{
     Graphics g;
     int bounds = 2;
     long lastTime; // pour les fps
+    String message = null;
 
     public GameUI(RvR theGame){
         this.setBackground(Color.gray);
@@ -41,6 +42,9 @@ public class GameUI extends JPanel{
         drawEntities();
         // affichage des fps
         drawFps();
+        // drawMessage
+        if(message!=null)
+            drawMessage();
     }
 
     public void drawEntity(Entity e){
@@ -95,6 +99,17 @@ public class GameUI extends JPanel{
         g.setColor(Color.MAGENTA);
         g.setFont(new Font("Courier", Font.BOLD, 20));
         g.drawString(String.valueOf(tps), 10, 20);
+    }
+
+    public void drawMessage(){
+        g.setColor(Color.MAGENTA);
+        g.setFont(new Font("Courier", Font.BOLD, 20));
+        g.drawString(message, theGame.ringSize/2, theGame.ringSize/2);
+        message = null;
+    }
+    public void sendMessage(String message) {
+        this.message = message;
+        repaint();
     }
 }
 

@@ -1,7 +1,7 @@
 package RvRUI;
 
 import LootEntities.HealthEntity;
-//import Robots.*;
+import RvR.Robot;
 import RvR.*;
 
 import javax.swing.*;
@@ -11,8 +11,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+
+import static javax.swing.JOptionPane.showMessageDialog;
 
 /**
  * Created by Unikaz on 16/01/2016.
@@ -21,8 +22,14 @@ public class UI extends JFrame implements RvREvents, ListSelectionListener {
 
     RvR rvr;
     GameUI gameUI;
+
+    boolean startStop = true;
+
+    // Window's elements
     JPanel pan;
     JList jbotList;
+    JButton addBtn;
+    final JButton startStopBtn;
 
     private final String botsDir = "bots";
 
@@ -32,60 +39,45 @@ public class UI extends JFrame implements RvREvents, ListSelectionListener {
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
 
-        pan = new JPanel(new BorderLayout());
-        JPanel btnPan = new JPanel();
-        final JTextArea console = new JTextArea();
-        jbotList = new JList();
-        loadBotList();
 
-
-        pan.add(btnPan, BorderLayout.NORTH);
-        pan.add(jbotList, BorderLayout.EAST);
-        this.getContentPane().add(pan);
-        this.setVisible(true);
-
-        // Bouton Start
-        JButton initBtn = new JButton("Init");
-        btnPan.add(initBtn);
-        initBtn.addActionListener(new ActionListener() {
+        // Menu
+        JMenuBar menu = new JMenuBar();
+        // Bouton Start/Stop
+        startStopBtn = new JButton("Start");
+        startStopBtn.setEnabled(false);
+        menu.add(startStopBtn);
+        startStopBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                rvr.stopRvr();
-                init();
-                repaint();
-            }
-        });
-        JButton startBtn = new JButton("Start");
-        btnPan.add(startBtn);
-        startBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                rvr.presentation();
-                rvr.startRvr();
-            }
-        });
-        JButton addRobot1 = new JButton("Add Robot");
-        btnPan.add(addRobot1);
-        addRobot1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                rvr.dynamicLoadRobot(jbotList.getSelectedValue().toString());
-                repaint();
+                if(startStop) {
+                    rvr.startRvr();
+                    startStopBtn.setText("Stop");
+                    startStop = false;
+                }else{
+                    rvr.stopRvr();
+                    init();
+                    repaint();
+                    startStopBtn.setEnabled(false);
+                    startStopBtn.setText("Start");
+                    startStop = true;
+                }
             }
         });
 
-        JButton addHealth = new JButton("Add Health");
-        btnPan.add(addHealth);
+        // Sous-menu entitées
+        JMenu menuEntities = new JMenu("Entities");
+        JMenuItem addHealth = new JMenuItem("Add Health");
         addHealth.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                rvr.addEntity(new HealthEntity());
-                repaint();
+                rvr.addEntity(new HealthEntity()); repaint();
             }
         });
+        menuEntities.add(addHealth);
+        menu.add(menuEntities);
 
         JButton reloadBtn = new JButton("Reload Robots list");
-        btnPan.add(reloadBtn);
+        menu.add(reloadBtn);
         reloadBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -94,8 +86,54 @@ public class UI extends JFrame implements RvREvents, ListSelectionListener {
         });
 
         JButton openEditor = new JButton("Open Robot Editor");
-        btnPan.add(openEditor);
+        menu.add(openEditor);
         openEditor.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                RobotEditor re = new RobotEditor();
+            }
+        });
+        setJMenuBar(menu);
+
+
+        // Panel List of robots
+        JPanel listPan = new JPanel(new BorderLayout());
+        listPan.setPreferredSize(new Dimension(100, 100));
+        jbotList = new JList();
+        jbotList.setFixedCellWidth(100);
+        jbotList.setSize(100, 100);
+        listPan.setSize(100, 300);
+        addBtn = new JButton(">");
+        addBtn.setEnabled(false);
+        JButton editBtn = new JButton("E");
+        JPanel listMenu = new JPanel();
+        listPan.setPreferredSize(new Dimension(100, 300));
+        addBtn.setPreferredSize(new Dimension(20,20));
+        editBtn.setPreferredSize(new Dimension(20,20));
+        listMenu.add(addBtn);
+        listMenu.add(editBtn);
+        listPan.add(listMenu, BorderLayout.NORTH);
+        listPan.add(jbotList, BorderLayout.CENTER);
+        loadBotList();
+
+        // Les actions des boutons de la list
+        addBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Robot r = (Robot)RobotLoader.dynamicLoadRobot(jbotList.getSelectedValue().toString());
+                if(r != null) {
+                    rvr.addEntity(r);
+                    System.out.println("[" + r.getEntityName() + "] " + r.getPresentation());
+                    repaint();
+                    if(!rvr.isRunning()){
+                        startStopBtn.setEnabled(true);
+                    }
+                }else{
+                    System.out.println("Can't load the robot");
+                }
+            }
+        });
+        editBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 RobotEditor re = new RobotEditor();
@@ -103,19 +141,17 @@ public class UI extends JFrame implements RvREvents, ListSelectionListener {
         });
 
 
-        // RvRUI.Console
-        console.setSize(250,250);
-        console.setBackground(Color.white);
-
-        // game
-        //rvr.addRvRListener(this);
+        // on ajoute au JPanel général
+        pan = new JPanel(new BorderLayout());
+        pan.add(listPan, BorderLayout.WEST);
+        this.getContentPane().add(pan);
+        this.setVisible(true);
 
 
         // on balance init, ça sera fait ^^
         init();
         // et un chargement de la botlist
         loadBotList();
-        //repaint();
 
     }
 
@@ -152,14 +188,8 @@ public class UI extends JFrame implements RvREvents, ListSelectionListener {
                 }
 
 
-
-                //jbotList = new JList(fileList);
                 jbotList.clearSelection();
                 jbotList.setListData(validFiles.toArray());
-                //jbotList.setSize(200, 100);
-                jbotList.setFixedCellWidth(100);
-                jbotList.setSize(100, 500);
-                pan.add(jbotList, BorderLayout.EAST);
                 jbotList.removeListSelectionListener(this);
                 jbotList.addListSelectionListener(this);
 
@@ -182,6 +212,21 @@ public class UI extends JFrame implements RvREvents, ListSelectionListener {
 
     @Override
     public void onEnd() {
+        String robots = "";
+        for(Entity e : rvr.getEntities()){
+            if(e instanceof Robot){
+                robots += "["+e.getRobotType()+"] "+ e.getEntityName() + " survive : " + e.getTimeAlive() + " - Health : " + e.getHealth() + "\n";
+            }
+        }
+        showMessageDialog(null, "End \n"+robots);
+        rvr.clearRun();
+        // reset UI
+        init();
+        startStop = true;
+        startStopBtn.setEnabled(false);
+        startStopBtn.setText("Start");
+        //gameUI.sendMessage("END \n" + robots);
+        System.out.println("-----------------------------------------------------------");
 
     }
 
@@ -189,8 +234,6 @@ public class UI extends JFrame implements RvREvents, ListSelectionListener {
     // Event de la JList
     @Override
     public void valueChanged(ListSelectionEvent e) {
-        System.out.println(jbotList.getSelectedValue());
-
-        //System.out.println();
+        addBtn.setEnabled(true);
     }
 }
