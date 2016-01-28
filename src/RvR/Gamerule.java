@@ -29,7 +29,7 @@ public class Gamerule {
                     e.removeHealth(1);
                 } else if (e instanceof Bullet) {
                     // heu... si ils font feu dans une coop, c'est leur problème ^^
-                } else if (e instanceof LootEntity) {
+                } else if (e instanceof OtherEntity) {
                     // On va compter le nombre d'entité lootable pour avoir toujours X loot sur la map
                     nbLoot--;
                 }
@@ -46,7 +46,7 @@ public class Gamerule {
                     e.removeHealth(1);
                 } else if (e instanceof Bullet) {
                     // heu... si ils font feu dans une coop, c'est leur problème ^^
-                } else if (e instanceof LootEntity) {
+                } else if (e instanceof OtherEntity) {
                     // On va compter le nombre d'entité lootable pour avoir toujours X loot sur la map
                     nbLoot--;
                 }

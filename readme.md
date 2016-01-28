@@ -8,7 +8,7 @@ Actually, the program is just at its beginning, and many things have to be done 
 The UI don't permit to make things correctly and should be one of the next step.
 Robots are saved in bots/RobotName.java and will be compile during runtime when you add them from the list. So now you can create and modify robots without recompile everything or relaunch the game.
 The robots' editor isn't ready yet, it's just a base for work ^^
-You can't create wall now, but you can create some LootEntities like the HealthEntity.
+You can't create wall now, but you can create some OtherEntities like the HealthEntity.
 
 ##Actual robots capacities
 *Actuators

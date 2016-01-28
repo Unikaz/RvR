@@ -1,6 +1,7 @@
 package RvRUI;
 
-import LootEntities.HealthEntity;
+import OtherEntities.Base;
+import OtherEntities.HealthEntity;
 import RvR.Robot;
 import RvR.*;
 
@@ -74,6 +75,14 @@ public class UI extends JFrame implements RvREvents, ListSelectionListener {
             }
         });
         menuEntities.add(addHealth);
+        JMenuItem addBase = new JMenuItem("Add Base");
+        addBase.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                rvr.addEntity(new Base()); repaint();
+            }
+        });
+        menuEntities.add(addBase);
         menu.add(menuEntities);
 
         JButton reloadBtn = new JButton("Reload Robots list");

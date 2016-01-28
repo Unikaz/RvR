@@ -26,6 +26,7 @@ public abstract class Entity {
     private long bornTime = -1; // in ticks
     private long deathTime = -1; // in ticks
     ArrayList<TargetEntity> touchingEntities;
+    private ArrayList<Entity> touchingEntitiesReal;
     ArrayList<TargetEntity> viewEntities;
 
     // Etat
@@ -74,6 +75,7 @@ public abstract class Entity {
         viewField = 30;
         //
         touchingEntities = new ArrayList<TargetEntity>();
+        touchingEntitiesReal = new ArrayList<>();
         viewEntities = new ArrayList<TargetEntity>();
     }
 
@@ -157,11 +159,16 @@ public abstract class Entity {
     public int getViewField() {
         return viewField;
     }
+    public float getMaxSpeed(){
+        return maxVelocity;
+    }
+
+    // Getter non accessible aux robots
     ArrayList<TargetEntity> getViewEntities(){
         return viewEntities;
     }
-    public float getMaxSpeed(){
-        return maxVelocity;
+    ArrayList<Entity> getTouchingEntitiesReal(){
+        return touchingEntitiesReal;
     }
 
     // SETTER
@@ -189,6 +196,7 @@ public abstract class Entity {
     void touchEntity(Entity e){
         touch = true;
         touchingEntities.add(new TargetEntity(e));
+        touchingEntitiesReal.add(e);
     }
     void setSize(int size){
         this.size = size;
@@ -198,6 +206,12 @@ public abstract class Entity {
     }
     void setViewField(int viewField){
         this.viewField = viewField;
+    }
+    void setMaxHealth(int amount){
+        this.maxHealth = amount;
+    }
+    void setHealth(int amount){
+        this.health = amount;
     }
     // SETTER accessible au robot
     public void setEntityName(String name){
@@ -239,6 +253,7 @@ public abstract class Entity {
     }
     void resetSensors(){
         touchingEntities.clear();
+        touchingEntitiesReal.clear();
         viewEntities.clear();
         touch = false;
         touchWall = false;

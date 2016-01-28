@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Created by Unikaz on 16/01/2016.
  */
-public abstract class Robot extends Entity implements CanSee{
+public abstract class Robot extends Entity implements CanSee, Touchable{
 
     protected String presentation;
     int fireCooldown = 15;

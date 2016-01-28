@@ -1,11 +1,6 @@
 package RvR;
 
 import javax.swing.event.EventListenerList;
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 
 /**
@@ -270,14 +265,13 @@ public class RvR extends Thread implements EntityEvents {
     }
     @Override
     public void onHit(Entity attacker, Entity target) {
-        //echo(attacker.getEntityName() + " HIT " + target.getEntityName());
         attacker.touchEntity(target);
         target.touchEntity(attacker);
-        if(attacker instanceof Bullet){
+        if(attacker instanceof Bullet && target instanceof Touchable){
             target.removeHealth(attacker.getDamage());
             attacker.removeHealth(10);
-        }else if(attacker instanceof LootEntity){
-            ((LootEntity)attacker).action(target);
+        }else if(attacker instanceof OtherEntity){
+            ((OtherEntity)attacker).action(target);
         }else if(attacker instanceof Robot){
             // rien... ou une explosion !!! ^^
             //echo("Boom !");
@@ -285,7 +279,7 @@ public class RvR extends Thread implements EntityEvents {
     }
     @Override
     public void onDeath(Entity e) {
-        if(e instanceof Bullet || e instanceof LootEntity){
+        if(e instanceof Bullet || e instanceof OtherEntity){
             entitiesGarbage.add(e);
         }else{
             echo(e.getEntityName() + " is dead");
@@ -295,18 +289,6 @@ public class RvR extends Thread implements EntityEvents {
     }
     @Override
     public void onMove(Entity e){
-        /*
-
-        if(e.getX()+e.getSize() > ringSize)
-            e.setX(ringSize-e.getSize());
-        if(e.getX()-e.getSize() < 0)
-            e.setX(e.getSize());
-        if(e.getY()+e.getSize() > ringSize)
-            e.setY(ringSize-e.getSize());
-        if(e.getY()-e.getSize() < 0)
-            e.setY(e.getSize());
-          */
-
         // Collision avec les bords du ring
         if(e.getX()<e.getSize() || e.getY()<e.getSize() || e.getX()>ringSize-e.getSize() || e.getY()>ringSize-e.getSize())
         {
@@ -322,7 +304,6 @@ public class RvR extends Thread implements EntityEvents {
             if(e.getY()-e.getSize() <= 0)
                 e.setY(e.getSize() + 1);
         }
-        //echo(e.getEntityName() + " move to " + e.getX() + "," + e.getY());
     }
     @Override
     public void onHitWall(Entity e){
