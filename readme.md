@@ -11,17 +11,17 @@ The robots' editor isn't ready yet, it's just a base for work ^^
 You can't create wall now, but you can create some OtherEntities like the HealthEntity.
 
 ##Actual robots capacities
-*Actuators
-    *Change speed
-    *Change orientation
-    *Fire (bullet)
-    *Attack
-    *Change view field (with fire's precision)
+- Actuators
+    - Change speed
+    - Change orientation
+    - Fire (bullet)
+    - Attack
+    - Change view field (with fire's precision)
 
-*Sensors
-    *Contact with entities
-    *Contact with map border
-    *View entities in view field
+- Sensors
+    - Contact with entities
+    - Contact with map border
+    - View entities in view field
 
 
 About the dynamically loaded robots :
