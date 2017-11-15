@@ -1,16 +1,16 @@
-#Robot vs Robot
+# Robot vs Robot
 
 The goal of this project is to create an environement for battles between robots.
 It's inspired by robocode and code combat.
 
-##What's now
+### What's now
 Actually, the program is just at its beginning, and many things have to be done before it become usable.
 The UI don't permit to make things correctly and should be one of the next step.
 Robots are saved in bots/RobotName.java and will be compile during runtime when you add them from the list. So now you can create and modify robots without recompile everything or relaunch the game.
 The robots' editor isn't ready yet, it's just a base for work ^^
 You can't create wall now, but you can create some OtherEntities like the HealthEntity.
 
-##Actual robots capacities
+### Actual robots capacities
 - Actuators
     - Change speed
     - Change orientation
